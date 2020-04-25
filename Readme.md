@@ -1,1 +1,1 @@
-Repositório para envio de laudos com informações do Kobo
+Repository to send emails based on the data files from Kobo
