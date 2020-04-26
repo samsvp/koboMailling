@@ -10,7 +10,7 @@ def create_body(result, date):
     """
     Creates the body of the email based on the result
     """
-    message = "Segue em anexo o Laudo Técnico de Diagnóstico Molecular para o Vírus SARS-CoV2 de exame realizado na UFRJ no dia" + date + "."
+    message = "Segue em anexo o Laudo Técnico de Diagnóstico Molecular para o Vírus SARS-CoV2 de exame realizado na UFRJ no dia " + date + "."
 
     if result == "positivo": 
         message += "\nSolicitamos que retorne esse e-mail nos atualizando sobre o seu estado de saúde atual e que não hesite em contactar em caso de dúvidas. Torcemos por uma breve recuperação."

@@ -45,12 +45,12 @@ def create_report(kobo_data, name=""):
 
     observations = "\n\
     (1) No caso de exame POSITIVO o paciente deverá manter-se afastado das, \
-    atividades laboraispor período mínimo de 14 dias após início dos sintomas.Recomendamos, \
+    atividades laborais por período mínimo de 14 dias após início dos sintomas. Recomendamos \
     que retorne no 14° dia para coleta de nova amostra para controle de cura.\n \
-    (2) No caso do SARS-CoV2 NÃO estar detectável na amostra, deve-se levar em consideração, \
-    otipo de material coletado e o tempo transcorrido entre o período de sintomas observados, \
-    e adata da coleta da amostra para realização do exame.\n \
-    (3) Amostra com detecção indeterminada para o ácido nucléico do SARS-CoV2 sugerimos arealização, \
+    (2) No caso do SARS-CoV2 NÃO estar detectável na amostra, deve-se levar em consideração \
+    o tipo de material coletado e o tempo transcorrido entre o período de sintomas observados, \
+    e a data da coleta da amostra para realização do exame.\n \
+    (3) Amostra com detecção indeterminada para o ácido nucléico do SARS-CoV2 sugerimos a realização \
     de nova coleta/exame."
 
 
