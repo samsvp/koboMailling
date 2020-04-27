@@ -38,10 +38,10 @@ def create_report(kobo_data, name=""):
     methodology = "Exame de diagnóstico molecular pelo Método de detecção de RT-PCR em tempo real, \
     com sondas de detecção para SARS-CoV2 (COVID-19)"
 
-    result = f"{_result}"
+    result = f"{_result}".title()
 
     conclusion = f"A amostra coletada de [x] SW, do paciente na presente data, mostrou-se, \
-    {_result} para o ácidonucléico do SARS-CoV2."
+    {result} para o ácidonucléico do SARS-CoV2."
 
     observations = "\n\
     (1) No caso de exame POSITIVO o paciente deverá manter-se afastado das, \
