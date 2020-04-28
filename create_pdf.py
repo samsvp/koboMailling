@@ -13,13 +13,13 @@ def get_report(name):
     return file_data, file_name
 
 
-def create_report(kobo_data, name=""):
+def create_report(kobo_data, name="result.pdf"):
     """
     Creates a report based on the patient data.
     Returns the name of the create pdf.
     """
 
-    if not name: name = 'result.pdf'
+    if not name.endswith(".pdf"): name += ".pdf"
 
     _patient = kobo_data["identificacao/nm"]
     _sample_date = kobo_data["_submission_time"].replace("T", " ")
