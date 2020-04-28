@@ -1,9 +1,11 @@
-import tkinter as tk 
+import tkinter as tk
+from tkinter import messagebox
 from threading import Thread
 
 from get_kobo_data import get_kobo_data
 from create_pdf import create_report, get_report
 from mailling_system import create_body, send_email_report
+
 
 data_retrieved = False
 kobo_data = []
@@ -22,26 +24,49 @@ def send(idx):
     #send_email_report("samuelsimplicio5@gmail.com", body, pdf_data, pdf_name)
 
 
+def show_error_box(msg):
+    _ = tk.Tk()
+    _.withdraw()
+    messagebox.showerror("Error", error_msg)
+
+
 def parse_data(txt_entry, txt_label):
     raw_indexs = txt_entry.get().replace(" ", "").split(",")
     
     indexes = []
     for idx in raw_indexs:
-        if ":" not in idx: indexes.append(int(idx))
+        if ":" not in idx: 
+            try:
+                indexes.append(int(idx))
+            except ValueError as e:
+                show_error_box(f"Sintaxe inválida: {e}")
+                return
         else:
-            begin, end = idx.split(":")
-            rng = [*range(int(begin), int(end) + 1)]
-            for r in rng: indexes.append(r)
+            try:
+                begin, end = idx.split(":")            
+                rng = [*range(int(begin), int(end) + 1)]
+                for r in rng: indexes.append(r)
+            except ValueError as e:
+                show_error_box(f"Sintaxe inválida: {e}")
+                return
 
     print(indexes)
     
     txt_entry.configure(state = "disabled")
     txt_label.configure(text = "Mandando emails")
 
-    for idx in indexes: send(idx)
+    errors = []
+    for idx in indexes:
+        try: send(idx)
+        except Exception as e: errors.append((idx, e))
+
+    error_msg = "Os dados dos seguintes pacientes contém erro:\n"
+    for error in errors: error_msg += str(error[0]) + ": " + error[1] + "\n"
+
+    show_error_box(error_msg)
     
-    txt_entry.delete(0, "end")
     txt_entry.configure(state = "normal")
+    txt_entry.delete(0, "end")
     txt_label.configure(text = "Selecione o número dos pacientes cujo laudo deve ser mandado")
     
 
@@ -94,16 +119,5 @@ def main():
         
     window.mainloop()
 
-
-# kobo_data = get_kobo_data()
-
-# sample_date = kobo_data["_submission_time"].replace("T", " ")
-# result = kobo_data["identificacao/result"]
-
-# body = create_body(result, sample_date)
-
-# pdf_data, pdf_name = get_report(create_report(kobo_data))
-
-# send_email_report("samuelsimplicio5@gmail.com", body, pdf_data, pdf_name)
 
 main()
