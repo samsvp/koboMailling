@@ -6,7 +6,7 @@ from email.message import EmailMessage
 from create_pdf import create_report
 
 
-def create_body(rame, result, date):
+def create_body(name, result, date):
     """
     Creates the body of the email based on the result
     """

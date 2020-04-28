@@ -25,10 +25,18 @@ def send(idx):
     #send_email_report("samuelsimplicio5@gmail.com", body, pdf_data, pdf_name)
 
 
+def show_info_box(msg):
+    _ = tk.Tk()
+    _.withdraw()
+    messagebox.showinfo("Info", msg)
+    _.destroy()
+
+
 def show_error_box(msg):
     _ = tk.Tk()
     _.withdraw()
-    messagebox.showerror("Error", error_msg)
+    messagebox.showerror("Error", msg)
+    _.destroy()
 
 
 def parse_data(txt_entry, txt_label):
@@ -51,21 +59,28 @@ def parse_data(txt_entry, txt_label):
                 show_error_box(f"Sintaxe inválida: {e}")
                 return
 
-    print(indexes)
-    
     txt_entry.configure(state = "disabled")
     txt_label.configure(text = "Mandando emails")
 
     errors = []
+    n_enviados = 0
     for idx in indexes:
-        try: send(idx)
-        except Exception as e: errors.append((idx, e))
+        try: 
+            send(idx)
+            n_enviados += 1
+        except KeyError as e: 
+            errors.append((idx, f"dados vazios ({e})"))
+        except IndexError as e:
+            errors.append((idx, "nº de paciente inexistente"))
+        except Exception as e:
+            errors.append((idx, e))
 
-    error_msg = "Os dados dos seguintes pacientes contém erro:\n"
-    for error in errors: error_msg += str(error[0]) + ": " + error[1] + "\n"
+    error_msg = "Os dados dos seguintes apresentaram erro:\n"
+    for error in errors: error_msg += f"{error[0]}:  {error[1]}\n"
 
-    show_error_box(error_msg)
-    
+    if errors: show_error_box(error_msg)
+    show_info_box(f"{n_enviados} emails enviados!")
+
     txt_entry.configure(state = "normal")
     txt_entry.delete(0, "end")
     txt_label.configure(text = "Selecione o número dos pacientes cujo laudo deve ser mandado")
@@ -96,6 +111,13 @@ def main():
     
     kobo_data = get_kobo_data()
     
+    if not kobo_data:
+        msg = "Não foi possível se conectar com o Kobo. \
+Por favor, verifique sua conecção com a internet e tente novamente"
+        show_error_box(msg)
+        data_retrieved = True    
+        exit(0)
+
     data_retrieved = True
 
     window = tk.Tk()
@@ -115,9 +137,11 @@ def main():
     txt_entry = tk.Entry(window, width=50)
     txt_entry.place(relx=0.5, rely=0.4, anchor=tk.CENTER)
 
-    button = tk.Button(window, text="Enviar Emails", command= lambda: parse_data(txt_entry, txt_label))
+    button = tk.Button(window, text="Enviar Emails", command=lambda: parse_data(txt_entry, txt_label))
     button.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
         
+    window.bind('<Return>', lambda x: parse_data(txt_entry, txt_label))
+
     window.mainloop()
 
 

@@ -2,7 +2,9 @@ import requests
 import json
 from time import sleep
 
-def get_kobo_data():
+def get_kobo_data(tries=0):
+    if tries > 1000: return False
+
     with open('tokens.json') as f:
         data = json.load(f)
 
@@ -16,6 +18,6 @@ def get_kobo_data():
     except Exception as e:
         print(e)
         sleep(0.1)
-        return get_kobo_data()
+        return get_kobo_data(tries + 1)
 
     return registries["results"]
