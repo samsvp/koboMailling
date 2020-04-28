@@ -16,8 +16,9 @@ def send(idx):
 
     sample_date = data["_submission_time"].replace("T", " ")
     result = data["identificacao/result"]
+    name = data["identificacao/nm"]
 
-    body = create_body(result, sample_date)
+    body = create_body(name, result, sample_date)
 
     pdf_data, pdf_name = get_report(create_report(data))
 
