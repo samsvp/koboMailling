@@ -22,7 +22,7 @@ def send(idx):
 
     pdf_data, pdf_name = get_report(create_report(data))
 
-    #send_email_report("samuelsimplicio5@gmail.com", body, pdf_data, pdf_name)
+    # send_email_report("samuelsimplicio5@gmail.com", body, pdf_data, pdf_name)
 
 
 def show_info_box(msg):

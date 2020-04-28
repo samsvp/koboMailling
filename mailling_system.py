@@ -11,7 +11,7 @@ def create_body(name, result, date):
     Creates the body of the email based on the result
     """
 
-    message = f"Prezado {name},\n\nSegue em anexo o Laudo Técnico de Diagnóstico Molecular para o Vírus SARS-CoV2 de exame realizado na UFRJ no dia {date}."
+    message = f"Prezado/a {name},\n\nSegue em anexo o Laudo Técnico de Diagnóstico Molecular para o Vírus SARS-CoV2 de exame realizado na UFRJ no dia {date}."
 
     if result == "positivo": 
         message += "\nSolicitamos que retorne esse e-mail nos atualizando sobre o seu estado de saúde atual e que não hesite em contactar em caso de dúvidas. Torcemos por uma breve recuperação."
@@ -36,11 +36,20 @@ def send_email_report(to_email, body, pdf_data, pdf_name):
     EMAIL_ADDRESS = data["email_address"]
     EMAIL_PASS = data["email_pass"]
 
+    try:
+        with open("mail_list.txt", "r") as _emails:
+            emails = _emails.read()
+        # transform ",", new lines and ";" into whitespace
+        emails_list = emails.replace("\n"," ").replace(","," ").replace(";"," ").split(" ")
+        cc = list(filter(lambda x: x!= "", emails_list)) # clean up the list
+    except FileNotFoundError:
+        cc = [""]
+
     msg = EmailMessage()
     msg['Subject'] = 'Resultado laboratorial Covid 19'
     msg['From'] = EMAIL_ADDRESS
     msg['To'] = to_email
-    msg['CC'] = data["CC"]
+    msg['CC'] = cc
     msg.set_content(body)
 
     msg.add_attachment(pdf_data,  maintype='application/pdf', subtype='pdf', filename=pdf_name)
