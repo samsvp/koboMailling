@@ -14,7 +14,9 @@ kobo_data = []
 
 
 def send(idx, address, password):
-
+    """
+    Sends an email to the patient containing the test result and a report
+    """
     data = kobo_data[idx]
 
     sample_date = data["_submission_time"].replace("T", " ")
@@ -33,6 +35,8 @@ def send(idx, address, password):
         print(e)
 
 
+# Every messagebox must belong to a window, so we create a 
+# window, hide it, and destroy when the box is closed.
 def show_info_box(msg):
     _ = tk.Tk()
     _.withdraw()
@@ -48,6 +52,10 @@ def show_error_box(msg):
 
 
 def parse_data(window, txt_entry, txt_label):
+    """
+    Parse the data from the text box to get the numbers of the patients
+    which we wish to send an email to.
+    """
     raw_indexs = txt_entry.get().replace(" ", "").split(",")
     
     indexes = []
@@ -71,12 +79,14 @@ def parse_data(window, txt_entry, txt_label):
     txt_entry.configure(state = "disabled")
     txt_label.configure(text = "Mandando emails")
     
+    # Update window to disable the txt_entry and change the text of txt_label
     window.update()
 
     errors = []
     n_enviados = 0
     for idx in indexes:
         try:
+            # Due to excel spreadsheets number, every patient number has an offset of 2
             send(idx - 2, address, password)
             n_enviados += 1
         except KeyError as e: 
