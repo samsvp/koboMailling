@@ -8,10 +8,13 @@ from mailling_system import create_body, send_email_report
 
 
 data_retrieved = False
+password = ""
+address = ""
 kobo_data = []
 
 
-def send(idx):
+def send(idx, address, password):
+
     data = kobo_data[idx]
 
     sample_date = data["_submission_time"].replace("T", " ")
@@ -22,7 +25,12 @@ def send(idx):
 
     pdf_data, pdf_name = get_report(create_report(data))
 
-    # send_email_report("samuelsimplicio5@gmail.com", body, pdf_data, pdf_name)
+    print(address, password)
+
+    try:
+        send_email_report(address, password, "samuelsimplicio5@gmail.com", body, pdf_data, pdf_name)
+    except Exception as e:
+        print(e)
 
 
 def show_info_box(msg):
@@ -39,7 +47,7 @@ def show_error_box(msg):
     _.destroy()
 
 
-def parse_data(txt_entry, txt_label):
+def parse_data(window, txt_entry, txt_label):
     raw_indexs = txt_entry.get().replace(" ", "").split(",")
     
     indexes = []
@@ -59,14 +67,17 @@ def parse_data(txt_entry, txt_label):
                 show_error_box(f"Sintaxe inválida: {e}")
                 return
 
+
     txt_entry.configure(state = "disabled")
     txt_label.configure(text = "Mandando emails")
+    
+    window.update()
 
     errors = []
     n_enviados = 0
     for idx in indexes:
-        try: 
-            send(idx)
+        try:
+            send(idx - 2, address, password)
             n_enviados += 1
         except KeyError as e: 
             errors.append((idx, f"dados vazios ({e})"))
@@ -86,6 +97,57 @@ def parse_data(txt_entry, txt_label):
     txt_label.configure(text = "Selecione o número dos pacientes cujo laudo deve ser mandado")
     
 
+def get_password():
+    
+    def _get_password(txt_user, txt_pass):
+        global password, address, exit_program
+
+        address = txt_user.get()
+        password = txt_pass.get()
+        destroy()
+
+
+    def destroy():
+        window.destroy()
+        wait_data()
+    
+
+    def on_closing():
+        global exit_program
+
+        window.destroy()
+        exit_program = True
+        exit(0)
+
+
+    window = tk.Tk()
+    window.title("Kobo Email Sender")
+    window.geometry('350x200')
+
+    lbl_address = tk.Label(window, text="Digite email")
+    lbl_address.place(relx=0.5, rely=0.1, anchor=tk.CENTER)
+
+    txt_address = tk.Entry(window, width=50)
+    txt_address.place(relx=0.5, rely=0.2, anchor=tk.CENTER)
+
+    lbl_pass = tk.Label(window, text="Digite a senha para seu Roundmail")
+    lbl_pass.place(relx=0.5, rely=0.3, anchor=tk.CENTER)
+
+    txt_pass = tk.Entry(window, width=50, show="*")
+    txt_pass.place(relx=0.5, rely=0.4, anchor=tk.CENTER)
+    
+    button = tk.Button(window, text="Log in", command=lambda: _get_password(txt_address, txt_pass))
+    button.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+        
+    window.bind('<Return>', lambda x: _get_password(txt_address, txt_pass))
+
+    window.protocol("WM_DELETE_WINDOW", on_closing)
+
+    Thread(target=get_data).start()
+
+    window.mainloop()
+
+
 def wait_data():
 
     def destroy():
@@ -104,21 +166,23 @@ def wait_data():
     window.mainloop()
 
 
+def get_data():
+    global kobo_data, data_retrieved
+    
+    kobo_data = get_kobo_data()
+    data_retrieved = True
+
+
 def main():
     global data_retrieved, kobo_data
 
-    Thread(target=wait_data).start()
-    
-    kobo_data = get_kobo_data()
+    get_password()
     
     if not kobo_data:
         msg = "Não foi possível se conectar com o Kobo. \
 Por favor, verifique sua conecção com a internet e tente novamente"
         show_error_box(msg)
-        data_retrieved = True    
-        exit(0)
-
-    data_retrieved = True
+        exit(0) 
 
     window = tk.Tk()
     window.title("Kobo Email Sender")
@@ -137,10 +201,10 @@ Por favor, verifique sua conecção com a internet e tente novamente"
     txt_entry = tk.Entry(window, width=50)
     txt_entry.place(relx=0.5, rely=0.4, anchor=tk.CENTER)
 
-    button = tk.Button(window, text="Enviar Emails", command=lambda: parse_data(txt_entry, txt_label))
+    button = tk.Button(window, text="Enviar Emails", command=lambda: parse_data(window, txt_entry, txt_label))
     button.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
-        
-    window.bind('<Return>', lambda x: parse_data(txt_entry, txt_label))
+    
+    window.bind('<Return>', lambda x: parse_data(window, txt_entry, txt_label))
 
     window.mainloop()
 

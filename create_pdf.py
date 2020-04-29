@@ -96,7 +96,3 @@ def create_report(kobo_data, name="result.pdf"):
     pdf.output(name, 'F')
 
     return name
-
-
-# import os
-# os.system('template.pdf')

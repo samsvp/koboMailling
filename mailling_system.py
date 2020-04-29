@@ -26,15 +26,10 @@ def create_body(name, result, date):
     return message
 
 
-def send_email_report(to_email, body, pdf_data, pdf_name):
+def send_email_report(address, password, to_email, body, pdf_data, pdf_name):
     """
     Sends the email to the patient and doctors informing the test results
     """
-    with open('tokens.json') as f:
-        data = json.load(f)
-
-    EMAIL_ADDRESS = data["email_address"]
-    EMAIL_PASS = data["email_pass"]
 
     try:
         with open("mail_list.txt", "r") as _emails:
@@ -47,7 +42,7 @@ def send_email_report(to_email, body, pdf_data, pdf_name):
 
     msg = EmailMessage()
     msg['Subject'] = 'Resultado laboratorial Covid 19'
-    msg['From'] = EMAIL_ADDRESS
+    msg['From'] = address
     msg['To'] = to_email
     msg['CC'] = cc
     msg.set_content(body)
@@ -55,6 +50,5 @@ def send_email_report(to_email, body, pdf_data, pdf_name):
     msg.add_attachment(pdf_data,  maintype='application/pdf', subtype='pdf', filename=pdf_name)
 
     with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
-        smtp.login(EMAIL_ADDRESS, EMAIL_PASS)
-
+        smtp.login(address, password)
         smtp.send_message(msg)
