@@ -16,15 +16,29 @@ def create_body(name, result, date):
     if result == "positivo": 
         message += "\nSolicitamos que retorne esse e-mail nos atualizando sobre o seu estado de saúde atual e que não hesite em contactar em caso de dúvidas. Torcemos por uma breve recuperação."
     elif result == "inconclusivo": 
-        message += "\nDevido ao resultado inconclusivo, solicitamos que retorne para coleta de nova amostra, de segunda a quinta-feira, entre 8:30-11:30 da manhã, no bloco N do CCS."
+        message += "\nDevido ao resultado inconclusivo, solicitamos que retorne para coleta de nova amostra, de segunda a sexta-feira, entre 8:30-11:30 da manhã, no bloco N do CCS."
     elif result == "negativo":
         pass
     else: raise Exception("Resultado inválido.", 
         "Resultado pode ser somente positivo, negativo ou inconclusivo") 
 
-    message += "\n\nAtenciosamente, \nEquipe COVID-19 - UFRJ"
+    message += "\nEm caso de dúvida, favor enviar e-mail para covid19@reitoria.ufrj.br\n\nAtenciosamente, \nEquipe COVID-19 - UFRJ"
     return message
 
+
+def check_login(address, password):
+    """
+    Verifies if the user put a valid email
+    """
+    try:
+        with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
+            smtp.login(address, password)
+        result = True
+    except:
+        result = False
+
+    return result
+    
 
 def send_email_report(address, password, to_email, body, pdf_data, pdf_name):
     """
@@ -52,3 +66,4 @@ def send_email_report(address, password, to_email, body, pdf_data, pdf_name):
     with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
         smtp.login(address, password)
         smtp.send_message(msg)
+

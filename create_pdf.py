@@ -1,5 +1,7 @@
 from fpdf import FPDF
 import datetime
+import sys
+import os
 
 
 def get_report(name):
@@ -11,6 +13,16 @@ def get_report(name):
         file_name = f.name
 
     return file_data, file_name
+
+
+def get_image(filename):
+    if getattr(sys, 'frozen', False):
+        # The application is frozen
+        datadir = os.path.join(os.path.dirname(sys.executable), "laudo_sars_cov")
+    else:
+        # The application is not frozen
+        datadir = "laudo_sars_cov"
+    return os.path.join(datadir, filename)
 
 
 def create_report(kobo_data, name="result.pdf"):
@@ -40,24 +52,21 @@ def create_report(kobo_data, name="result.pdf"):
 
     result = f"{_result}".title()
 
-    conclusion = f"A amostra coletada de [x] SW, do paciente na presente data, mostrou-se, \
+    conclusion = f"A amostra coletada de SW, do paciente na presente data, mostrou-se, \
     {result} para o ácidonucléico do SARS-CoV2."
 
     observations = "\n\
-    (1) No caso de exame POSITIVO o paciente deverá manter-se afastado das, \
-    atividades laborais por período mínimo de 14 dias após início dos sintomas. Recomendamos \
-    que retorne no 14° dia para coleta de nova amostra para controle de cura.\n \
-    (2) No caso do SARS-CoV2 NÃO estar detectável na amostra, deve-se levar em consideração \
-    o tipo de material coletado e o tempo transcorrido entre o período de sintomas observados, \
-    e a data da coleta da amostra para realização do exame.\n \
-    (3) Amostra com detecção indeterminada para o ácido nucléico do SARS-CoV2 sugerimos a realização \
-    de nova coleta/exame."
+    (1) No caso do SARS-CoV2 NÃO estar detectável na amostra, deve-se levar em consideração\
+ o tipo de material coletado e o tempo transcorrido entre o período de sintomas observados,\
+ e a data da coleta da amostra para realização do exame.\n \
+    (2) Amostra com detecção indeterminada para o ácido nucléico do SARS-CoV2 sugerimos a realização\
+ de nova coleta/exame."
 
 
     class PDF(FPDF):
 
         def header(self):
-            self.image("laudo_sars_cov/Header.png", 10, 8, 200)
+            self.image(get_image("Header.png"), 10, 8, 200)
             # Arial bold 15
             self.set_font('Arial', 'B', 15)
             self.cell(30, 60, 'Laudo Técnico de Diagnóstico Molecular para o Vírus SARS-CoV2 (COVID-19)', align='L')
@@ -91,7 +100,7 @@ def create_report(kobo_data, name="result.pdf"):
     pdf.body(50, 140, "Conclusão:", conclusion)
     pdf.body(50, 160, "Observações:", observations)
 
-    pdf.image("laudo_sars_cov/Footer.png", 75)
+    pdf.image(get_image("Footer.png"), 75)
 
     pdf.output(name, 'F')
 

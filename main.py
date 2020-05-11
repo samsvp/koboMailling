@@ -1,10 +1,20 @@
-import tkinter as tk
-from tkinter import messagebox
+import os
+import sys
+
+try:
+    import tkinter as tk
+    from tkinter import messagebox
+except: # Rename lib/Tkinter folder made by cv_Freeze executable
+    exe_dir = os.path.dirname(sys.executable)
+    os.rename(os.path.join(exe_dir, "lib","Tkinter"), os.path.join(exe_dir, "lib","tkinter"))
+    import tkinter as tk
+    from tkinter import messagebox
+
 from threading import Thread
 
 from get_kobo_data import get_kobo_data
 from create_pdf import create_report, get_report
-from mailling_system import create_body, send_email_report
+from mailling_system import create_body, send_email_report, check_login
 
 
 data_retrieved = False
@@ -19,6 +29,9 @@ def send(idx, address, password):
     """
     data = kobo_data[idx]
 
+
+    to_email = data["identificacao/eml"]
+
     sample_date = data["_submission_time"].replace("T", " ")
     result = data["identificacao/result"]
     name = data["identificacao/nm"]
@@ -27,12 +40,7 @@ def send(idx, address, password):
 
     pdf_data, pdf_name = get_report(create_report(data))
 
-    print(address, password)
-
-    try:
-        send_email_report(address, password, "samuelsimplicio5@gmail.com", body, pdf_data, pdf_name)
-    except Exception as e:
-        print(e)
+    # send_email_report(address, password, to_email, body, pdf_data, pdf_name)
 
 
 # Every messagebox must belong to a window, so we create a 
@@ -114,7 +122,16 @@ def get_password():
 
         address = txt_user.get()
         password = txt_pass.get()
-        destroy()
+        
+        if "@" not in address: address += "@gmail.com"
+
+        if check_login(address, password): destroy()
+        else: 
+            msg = """
+                Não foi possível realizar login no email.
+                Por favor verifique se o usuário e senha estão corretos e sua conexão com a internet.
+                """
+            show_error_box(msg)
 
 
     def destroy():
@@ -127,7 +144,7 @@ def get_password():
 
         window.destroy()
         exit_program = True
-        exit(0)
+        sys.exit(0)
 
 
     window = tk.Tk()
@@ -140,7 +157,7 @@ def get_password():
     txt_address = tk.Entry(window, width=50)
     txt_address.place(relx=0.5, rely=0.2, anchor=tk.CENTER)
 
-    lbl_pass = tk.Label(window, text="Digite a senha para seu Roundmail")
+    lbl_pass = tk.Label(window, text="Senha")
     lbl_pass.place(relx=0.5, rely=0.3, anchor=tk.CENTER)
 
     txt_pass = tk.Entry(window, width=50, show="*")
@@ -192,7 +209,7 @@ def main():
         msg = "Não foi possível se conectar com o Kobo. \
 Por favor, verifique sua conecção com a internet e tente novamente"
         show_error_box(msg)
-        exit(0) 
+        sys.exit(0) 
 
     window = tk.Tk()
     window.title("Kobo Email Sender")
