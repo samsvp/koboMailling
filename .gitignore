@@ -150,3 +150,10 @@ cython_debug/
 
 # Auth tokens
 tokens.json
+
+# build
+dist/
+build/
+
+# pdf
+*.pdf
