@@ -1,7 +1,21 @@
-from fpdf import FPDF
+import json
 import datetime
-import sys
-import os
+from fpdf import FPDF
+from utils import get_file
+
+
+paciente = ""
+data_amostra = ""
+ID = ""
+resultado = ""
+data = ""
+
+def f(non_f_str: str):
+    """
+    f string implementation for the json variables
+    """
+
+    return eval(f'f"""{non_f_str}"""')
 
 
 def get_report(name):
@@ -15,14 +29,8 @@ def get_report(name):
     return file_data, file_name
 
 
-def get_image(filename):
-    if getattr(sys, 'frozen', False):
-        # The application is frozen
-        datadir = os.path.join(os.path.dirname(sys.executable), "laudo_sars_cov")
-    else:
-        # The application is not frozen
-        datadir = "laudo_sars_cov"
-    return os.path.join(datadir, filename)
+def edit_template():
+    pass
 
 
 def create_report(kobo_data, name="result.pdf"):
@@ -30,55 +38,51 @@ def create_report(kobo_data, name="result.pdf"):
     Creates a report based on the patient data.
     Returns the name of the create pdf.
     """
+    global paciente, data_amostra, ID, resultado, data
 
     if not name.endswith(".pdf"): name += ".pdf"
 
-    _patient = kobo_data["identificacao/nm"]
-    _sample_date = kobo_data["_submission_time"].replace("T", " ")
-    _Id = kobo_data["_id"]
-    _result = kobo_data["identificacao/result"]
-    _date = str(datetime.datetime.now()).split(".")[0]
+    paciente = kobo_data["identificacao/nm"]
+    data_amostra = kobo_data["_submission_time"].replace("T", " ")
+    ID = kobo_data["_id"]
+    resultado = kobo_data["identificacao/result"].title()
+    data = str(datetime.datetime.now()).split(".")[0]
 
-    patient = f"Nome do Paciente: {_patient}\n"
-    date = f"Data: {_date}\n"
-    sample_date = f"Data de recebimento da amostra: {_sample_date}\n"
-    Id = f"Identificação do paciente: {_Id}\n"
+    patient = f"Nome do Paciente: {paciente}\n"
+    date = f"Data: {data}\n"
+    sample_date = f"Data de recebimento da amostra: {data_amostra}\n"
+    Id = f"Identificação do paciente: {ID}\n"
     material = "Material Coletado: swab/sangue\n"
 
     data_text = patient + date + sample_date + Id + material
 
-    methodology = "Exame de diagnóstico molecular pelo Método de detecção de RT-PCR em tempo real, \
-    com sondas de detecção para SARS-CoV2 (COVID-19)"
+    with open(get_file('pdf_template.json'), 'r', encoding='utf8') as fl:
+        data = json.load(fl)
 
-    result = f"{_result}".title()
-
-    conclusion = f"A amostra coletada de SW, do paciente na presente data, mostrou-se, \
-    {result} para o ácidonucléico do SARS-CoV2."
-
-    observations = "\n\
-    (1) No caso do SARS-CoV2 NÃO estar detectável na amostra, deve-se levar em consideração\
- o tipo de material coletado e o tempo transcorrido entre o período de sintomas observados,\
- e a data da coleta da amostra para realização do exame.\n \
-    (2) Amostra com detecção indeterminada para o ácido nucléico do SARS-CoV2 sugerimos a realização\
- de nova coleta/exame."
-
+    title_font = f(data["Fonte_Título"])
+    tf_size = f(data["Fonte_Título_tamanho"])
+    font = f(data["Fonte"])
+    f_size = f(data["Fonte_tamanho"])
+    title = f(data["Título"])
+    foot = f(data["Assinatura"])
+    methodology = f(data["Metodologia"])
+    result = f(data["Resultado"])
+    conclusion = f(data["Conclusão"])
+    observations = f(data["Observações"])
 
     class PDF(FPDF):
 
         def header(self):
-            self.image(get_image("Header.png"), 10, 8, 200)
+            self.image(get_file("Header.png"), 10, 8, 200)
             # Arial bold 15
-            self.set_font('Arial', 'B', 15)
-            self.cell(30, 60, 'Laudo Técnico de Diagnóstico Molecular para o Vírus SARS-CoV2 (COVID-19)', align='L')
+            self.set_font(title_font, 'B', int(tf_size))
+            self.cell(30, 60, title, align='L')
 
 
         def footer(self):
             self.set_y(-20)
-            _foot = "Avenida Carlos Chagas Filho, 375, CCS, Bloco A, sala 121, Cidade Universitária,\n\
-            Ilha do Fundão, Rio de Janeiro/RJ - CEP 21941-902\n \
-            Telefone: 55+21+3938-6384"
-            self.set_font('Times', '', 8)
-            self.multi_cell(0,5,_foot,align="C")
+            self.set_font(font, '', int(f_size))
+            self.multi_cell(0, 5, foot, align="C")
 
 
         def body(self, x_offset, y_offset, title, text):
@@ -100,7 +104,7 @@ def create_report(kobo_data, name="result.pdf"):
     pdf.body(50, 140, "Conclusão:", conclusion)
     pdf.body(50, 160, "Observações:", observations)
 
-    pdf.image(get_image("Footer.png"), 75)
+    pdf.image(get_file("Footer.png"), 75)
 
     pdf.output(name, 'F')
 
