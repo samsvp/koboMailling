@@ -151,6 +151,9 @@ cython_debug/
 # Auth tokens
 tokens.json
 
+# User json
+*pdf_user_template.json
+
 # build
 dist/
 build/
