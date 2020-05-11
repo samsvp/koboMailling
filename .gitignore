@@ -157,3 +157,6 @@ build/
 
 # pdf
 *.pdf
+
+#executables
+*.exe
