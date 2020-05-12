@@ -1,9 +1,9 @@
 import os
 import sys
-
+import json
 from threading import Thread
-
 import GUI
+from utils import get_file
 from get_kobo_data import get_kobo_data
 from create_pdf import create_report, get_report
 from mailling_system import create_body, send_email_report, check_login
@@ -15,27 +15,23 @@ address = ""
 kobo_data = []
 
 
-def _send(idx):
+def _send(idx, pdf_template_data):
     """
     Sends an email to the patient containing the test result and a report.
     """
-    data = kobo_data[idx]
+    _kobo_data = kobo_data[idx]
 
-    to_email = data["identificacao/eml"]
+    to_email = _kobo_data["identificacao/eml"]
 
-    sample_date = data["_submission_time"].replace("T", " ")
-    result = data["identificacao/result"]
-    name = data["identificacao/nm"]
+    sample_date = _kobo_data["_submission_time"].replace("T", " ")
+    result = _kobo_data["identificacao/result"]
+    name = _kobo_data["identificacao/nm"]
 
     body = create_body(name, result, sample_date)
 
-    pdf_data, pdf_name = get_report(create_report(data))
+    pdf_data, pdf_name = get_report(create_report(_kobo_data, pdf_template_data))
 
-    # Debug
-    import subprocess
-    subprocess.Popen("result.pdf",shell=True)
-
-    # send_email_report(address, password, to_email, body, pdf_data, pdf_name)
+    send_email_report(address, password, to_email, body, pdf_data, pdf_name)
 
 
 def send(indexes):
@@ -43,12 +39,18 @@ def send(indexes):
     Sends an email to all the patient containing the test result and a report in the
     indexes list.
     """
+    
+    filename = "pdf_user_template.json" if os.path.isfile(get_file("pdf_user_template.json")) else "pdf_template.json"
+
+    with open(get_file(filename), 'r', encoding='utf8') as fl:
+        pdf_template_data = json.load(fl)
+
     errors = []
     n_enviados = 0
     for idx in indexes:
         try:
             # Due to excel spreadsheets number, every patient number has an offset of 2
-            _send(idx - 2)
+            _send(idx - 2, pdf_template_data)
             n_enviados += 1
         except KeyError as e: 
             errors.append((idx, f"dados vazios ({e})"))
@@ -91,9 +93,10 @@ def parse_data(window, txt_entry, txt_label):
                 return
 
     GUI.sending_emails_trigger = True
+    GUI.show_info_box(f"Mandando {len(indexes)} emails")
+
     send(indexes)
     
-
 
 def get_data():
     global kobo_data, data_retrieved

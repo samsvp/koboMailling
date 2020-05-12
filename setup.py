@@ -1,5 +1,7 @@
 from cx_Freeze import setup, Executable
-
+"""
+Build with "python setup.py bdist_msi"
+"""
 
 include_files = ["laudo_sars_cov"]
 

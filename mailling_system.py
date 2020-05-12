@@ -3,26 +3,49 @@ import json
 import smtplib
 import requests
 from email.message import EmailMessage
+from utils import get_file
 from create_pdf import create_report
 
 
-def create_body(name, result, date):
+name = ""
+date = ""
+result = ""
+
+def f(non_f_str: str):
+    """
+    f string implementation for the json variables
+    """
+
+    return eval(f'f"""{non_f_str}"""')
+    
+
+def create_body(_name, _result, _date):
     """
     Creates the body of the email based on the result
     """
+    global name, date
 
-    message = f"Prezado/a {name},\n\nSegue em anexo o Laudo Técnico de Diagnóstico Molecular para o Vírus SARS-CoV2 de exame realizado na UFRJ no dia {date}."
+    name = _name
+    result = _result
+    date = _date
+    
+    filename = "email_user_template.json" if os.path.isfile(get_file("email_user_template.json")) else "email_template.json"
+
+    with open(get_file(filename), 'r', encoding='utf8') as fl:
+        data = json.load(fl)
+
+    message = f(data["corpo 1"])
 
     if result == "positivo": 
-        message += "\nSolicitamos que retorne esse e-mail nos atualizando sobre o seu estado de saúde atual e que não hesite em contactar em caso de dúvidas. Torcemos por uma breve recuperação."
+        message += f(data["positivo"])
     elif result == "inconclusivo": 
-        message += "\nDevido ao resultado inconclusivo, solicitamos que retorne para coleta de nova amostra, de segunda a sexta-feira, entre 8:30-11:30 da manhã, no bloco N do CCS."
+        message += f(data["inconclusivo"])
     elif result == "negativo":
-        pass
+        message += f(data["negativo"])
     else: raise Exception("Resultado inválido.", 
         "Resultado pode ser somente positivo, negativo ou inconclusivo") 
 
-    message += "\nEm caso de dúvida, favor enviar e-mail para covid19@reitoria.ufrj.br\n\nAtenciosamente, \nEquipe COVID-19 - UFRJ"
+    message += f(data["corpo 2"]) + f(data["assinatura"])
     return message
 
 

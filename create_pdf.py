@@ -8,7 +8,7 @@ paciente = ""
 data_amostra = ""
 ID = ""
 resultado = ""
-data = ""
+dt = ""
 
 def f(non_f_str: str):
     """
@@ -29,35 +29,28 @@ def get_report(name):
     return file_data, file_name
 
 
-def edit_template():
-    pass
-
-
-def create_report(kobo_data, name="result.pdf"):
+def create_report(kobo_data, data, pdf_name="result.pdf"):
     """
     Creates a report based on the patient data.
     Returns the name of the create pdf.
     """
-    global paciente, data_amostra, ID, resultado, data
+    global paciente, data_amostra, ID, resultado, dt
 
-    if not name.endswith(".pdf"): name += ".pdf"
+    if not pdf_name.endswith(".pdf"): pdf_name += ".pdf"
 
     paciente = kobo_data["identificacao/nm"]
     data_amostra = kobo_data["_submission_time"].replace("T", " ")
     ID = kobo_data["_id"]
     resultado = kobo_data["identificacao/result"].title()
-    data = str(datetime.datetime.now()).split(".")[0]
+    dt = str(datetime.datetime.now()).split(".")[0]
 
     patient = f"Nome do Paciente: {paciente}\n"
-    date = f"Data: {data}\n"
+    now = f"Data: {dt}\n"
     sample_date = f"Data de recebimento da amostra: {data_amostra}\n"
     Id = f"Identificação do paciente: {ID}\n"
     material = "Material Coletado: swab/sangue\n"
 
-    data_text = patient + date + sample_date + Id + material
-
-    with open(get_file('pdf_template.json'), 'r', encoding='utf8') as fl:
-        data = json.load(fl)
+    data_text = patient + now + sample_date + Id + material
 
     title_font = f(data["Fonte_Título"])
     tf_size = f(data["Fonte_Título_tamanho"])
@@ -74,7 +67,6 @@ def create_report(kobo_data, name="result.pdf"):
 
         def header(self):
             self.image(get_file("Header.png"), 10, 8, 200)
-            # Arial bold 15
             self.set_font(title_font, 'B', int(tf_size))
             self.cell(30, 60, title, align='L')
 
@@ -106,6 +98,6 @@ def create_report(kobo_data, name="result.pdf"):
 
     pdf.image(get_file("Footer.png"), 75)
 
-    pdf.output(name, 'F')
+    pdf.output(pdf_name, 'F')
 
-    return name
+    return pdf_name

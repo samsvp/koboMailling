@@ -1,11 +1,12 @@
 import requests
 import json
 from time import sleep
+from utils import get_file
 
 def get_kobo_data(tries=0):
     if tries > 1000: return False
 
-    with open('tokens.json') as f:
+    with open(get_file('tokens.json')) as f:
         data = json.load(f)
 
     auth_token = data["auth_token"]

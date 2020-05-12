@@ -1,0 +1,8 @@
+{
+    "corpo 1": "Prezado/a {name},\n\nSegue em anexo o Laudo Técnico de Diagnóstico Molecular para o Vírus SARS-CoV2 de exame realizado na UFRJ no dia {date}.\n",
+    "positivo": "Solicitamos que retorne esse e-mail nos atualizando sobre o seu estado de saúde atual e que não hesite em contactar em caso de dúvidas. Torcemos por uma breve recuperação.",
+    "negativo": "",
+    "inconclusivo": "Devido ao resultado inconclusivo, solicitamos que retorne para coleta de nova amostra, de segunda a sexta-feira, entre 8:30-11:30 da manhã, no bloco N do CCS.",
+    "corpo 2": "\nEm caso de dúvida, favor enviar e-mail para covid19@reitoria.ufrj.br",
+    "assinatura": "\nAtenciosamente, \nEquipe COVID-19 - UFRJ"
+}
