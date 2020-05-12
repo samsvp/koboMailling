@@ -192,8 +192,13 @@ def _edit_pdf(window, data):
         _kobo_data = {"identificacao/nm": "{nome}", "_submission_time": "{_submission_time}", 
                       "identificacao/result": "{resultado}", "_id": "{id}"}
         
+        show_info_box("Por favor, aguarde enquanto abrimos o seu PDF")
+
         create_report(_kobo_data, _data, "preview.pdf")
-        subprocess.Popen("preview.pdf", shell=True)
+        try:
+            subprocess.Popen("preview.pdf", shell=True)
+        except Exception as e:
+            show_error_box(e)
 
     def default():
         with open(get_file("pdf_template.json"), 'r', encoding='utf8') as fl:
@@ -292,7 +297,7 @@ def _edit_pdf(window, data):
     button_help = tk.Button(window, text="Reset", command=lambda : reset())
     button_help.place(relx=0.4, rely=0.9, anchor=tk.CENTER)
 
-    button_help = tk.Button(window, text="Ajuda", command=lambda : email_help())
+    button_help = tk.Button(window, text="Ajuda", command=lambda : pdf_help())
     button_help.place(relx=0.5, rely=0.9, anchor=tk.CENTER)
 
     button_help = tk.Button(window, text="Default", command=lambda : default())
