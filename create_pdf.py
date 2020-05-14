@@ -49,7 +49,7 @@ def create_report(data, template_data, pdf_name="result.pdf", use_kobo=True):
         ID = "20COV" + str(data["Número de registro:"])
         resultado = data["Resultado do teste (laboratório de virologia da UFRJ):"].title()
 
-    dt = str(datetime.datetime.now()).split(".").split(" ")[0]
+    dt = str(datetime.datetime.now()).split(".")[0].split(" ")[0]
 
     patient = f"Nome do Paciente: {paciente}\n"
     now = f"Data: {dt}\n"

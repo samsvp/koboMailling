@@ -67,7 +67,7 @@ def send(indexes):
         except Exception as e:
             errors.append((idx, e))
 
-    error_msg = "Os dados dos seguintes apresentaram erro:\n"
+    error_msg = "Os dados dos seguintes pacientes apresentaram erro:\n"
     for error in errors: error_msg += f"{error[0]}:  {error[1]}\n"
 
     if errors: GUI.show_error_box(error_msg)
