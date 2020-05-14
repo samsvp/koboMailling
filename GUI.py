@@ -9,17 +9,20 @@ from mailling_system import create_body, send_email_report, check_login
 try:
     import tkinter as tk
     from tkinter import messagebox
+    from tkinter import filedialog as fd
 except: # Rename lib/Tkinter folder made by cv_Freeze executable
     exe_dir = os.path.dirname(sys.executable)
     os.rename(os.path.join(exe_dir, "lib","Tkinter"), os.path.join(exe_dir, "lib","tkinter"))
     import tkinter as tk
     from tkinter import messagebox
+    from tkinter import filedialog as fd
 
 
+load_kobo_data = None
 data_retrieved = False
 sending_emails_trigger = False
 refresh_trigger = False
-
+using_kobo = None
 
 # Every messagebox must belong to a window, so we create a 
 # window, hide it, and destroy when the box is closed.
@@ -35,6 +38,11 @@ def show_error_box(msg):
     _.withdraw()
     messagebox.showerror("Error", msg)
     _.destroy()
+
+
+def question_box(question):
+    result = messagebox.askyesno(message=question)
+    return result
 
 
 def wait_data():
@@ -57,14 +65,14 @@ def wait_data():
     window.mainloop()
 
 
-def get_credentials(credentials):
+def get_credentials(credentials, title="Kobo Email Sender"):
     """
     Get user credentials
     """
     def _get_credentials(txt_user, txt_pass):
         address = txt_user.get()
         password = txt_pass.get()
-        
+
         if "@" not in address: address += "@gmail.com"
 
         if check_login(address, password): 
@@ -81,7 +89,7 @@ def get_credentials(credentials):
 
     def destroy():
         window.destroy()
-        wait_data()
+        if load_kobo_data: wait_data()
     
 
     def on_closing():
@@ -93,7 +101,7 @@ def get_credentials(credentials):
 
 
     window = tk.Tk()
-    window.title("Kobo Email Sender")
+    window.title(title)
     window.geometry('350x200')
 
     lbl_address = tk.Label(window, text="Digite email")
@@ -496,7 +504,41 @@ def edit_email():
     window.mainloop()
 
 
-def main_window(parse_data):
+def choose_data():
+    """
+    Asks the user if he wants to load his own data or load data from kobo.
+    """
+    def _choose_data(load_from_kobo):
+        global load_kobo_data
+        load_kobo_data = load_from_kobo
+        window.destroy()
+
+  
+    window = tk.Tk()
+    window.title("Email Sender")
+    window.geometry('400x200')
+
+    button_own = tk.Button(window, text="Carregar planilha", command=lambda: _choose_data(False))
+    button_own.place(relx=0.3, rely=0.5, anchor=tk.CENTER)
+
+    button_kobo = tk.Button(window, text="Pegar dados do Kobo", command=lambda: _choose_data(True))
+    button_kobo.place(relx=0.7, rely=0.5, anchor=tk.CENTER)
+
+    window.mainloop()
+
+
+def get_file_name():
+    """
+    Gets an excel or csv file path
+    """
+    _ = tk.Tk()
+    _.withdraw()
+    file_name = fd.askopenfilename(title = "Selecione um arquivo",filetypes = (("Excel Files","*xlsx"), ("Excel Files 2003","*xls"), ("CSV Files","*.csv")))
+    _.destroy()
+    return file_name
+    
+
+def main_window(parse_data, switch_data):
 
     def sending_email_text():
         global sending_emails_trigger
@@ -521,9 +563,20 @@ def main_window(parse_data):
             window.after(100, refresh_text)
         else: window.after(100, refresh_text)
 
+    def _switch_data():
+        global using_kobo
+        using_kobo = not using_kobo
+        txt_entry.configure(state = "disabled")
+        window.update()
+        switch_data()
+        switch_txt = "Carregar Planilha" if using_kobo else "Carregar Dados do Kobo"
+        button_switch.configure(text = switch_txt)
+        txt_entry.configure(state = "normal")
+        txt_entry.delete(0, "end")
+        window.update()
 
     window = tk.Tk()
-    window.title("Kobo Email Sender")
+    window.title("Email Sender")
     window.geometry('680x400')
 
     exp_label2 = tk.Label(window, text="Para selecionar pacientes dentro de um intervalos utilize dois ponto ':' e.g.\n \
@@ -538,6 +591,10 @@ def main_window(parse_data):
 
     txt_entry = tk.Entry(window, width=50)
     txt_entry.place(relx=0.5, rely=0.4, anchor=tk.CENTER)
+
+    switch_txt = "Carregar Planilha" if using_kobo else "Carregar Dados do Kobo"
+    button_switch = tk.Button(window, text=switch_txt, command=lambda: _switch_data()) 
+    button_switch.place(relx=0.0, rely=0.02, anchor=tk.W)
 
     button_send = tk.Button(window, text="Enviar Emails", command=lambda: parse_data(window, txt_entry, txt_label))
     button_send.place(relx=0.5, rely=0.5, anchor=tk.CENTER)

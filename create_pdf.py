@@ -29,7 +29,7 @@ def get_report(name):
     return file_data, file_name
 
 
-def create_report(kobo_data, data, pdf_name="result.pdf"):
+def create_report(data, template_data, pdf_name="result.pdf", use_kobo=True):
     """
     Creates a report based on the patient data.
     Returns the name of the create pdf.
@@ -38,11 +38,18 @@ def create_report(kobo_data, data, pdf_name="result.pdf"):
 
     if not pdf_name.endswith(".pdf"): pdf_name += ".pdf"
 
-    paciente = kobo_data["identificacao/nm"]
-    data_form = kobo_data["identificacao/data"]
-    ID = "20COV" + kobo_data["identificacao/reg"]
-    resultado = kobo_data["identificacao/result"].title()
-    dt = str(datetime.datetime.now()).split(".")[0]
+    if use_kobo:
+        paciente = data["identificacao/nm"]
+        data_form = data["identificacao/data"]
+        ID = "20COV" + str(data["identificacao/reg"])
+        resultado = data["identificacao/result"].title()
+    else:
+        paciente = data["Nome:"]
+        data_form = data["Data de preenchimento:"]
+        ID = "20COV" + str(data["Número de registro:"])
+        resultado = data["Resultado do teste (laboratório de virologia da UFRJ):"].title()
+
+    dt = str(datetime.datetime.now()).split(".").split(" ")[0]
 
     patient = f"Nome do Paciente: {paciente}\n"
     now = f"Data: {dt}\n"
@@ -52,16 +59,16 @@ def create_report(kobo_data, data, pdf_name="result.pdf"):
 
     data_text = patient + now + sample_date + Id + material
 
-    title_font = f(data["Fonte_Título"])
-    tf_size = f(data["Fonte_Título_tamanho"])
-    font = f(data["Fonte"])
-    f_size = f(data["Fonte_tamanho"])
-    title = f(data["Título"])
-    foot = f(data["Assinatura"])
-    methodology = f(data["Metodologia"])
-    result = f(data["Resultado"])
-    conclusion = f(data["Conclusão"])
-    observations = f(data["Observações"])
+    title_font = f(template_data["Fonte_Título"])
+    tf_size = f(template_data["Fonte_Título_tamanho"])
+    font = f(template_data["Fonte"])
+    f_size = f(template_data["Fonte_tamanho"])
+    title = f(template_data["Título"])
+    foot = f(template_data["Assinatura"])
+    methodology = f(template_data["Metodologia"])
+    result = f(template_data["Resultado"])
+    conclusion = f(template_data["Conclusão"])
+    observations = f(template_data["Observações"])
 
     class PDF(FPDF):
 

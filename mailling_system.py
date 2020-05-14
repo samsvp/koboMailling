@@ -36,6 +36,8 @@ def create_body(_name, _result, _date):
 
     message = f(data["corpo 1"])
 
+    result = result.lower()
+
     if result == "positivo": 
         message += f(data["positivo"])
     elif result == "inconclusivo": 
