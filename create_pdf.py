@@ -5,7 +5,7 @@ from utils import get_file
 
 
 paciente = ""
-data_amostra = ""
+data_form = ""
 ID = ""
 resultado = ""
 dt = ""
@@ -34,19 +34,19 @@ def create_report(kobo_data, data, pdf_name="result.pdf"):
     Creates a report based on the patient data.
     Returns the name of the create pdf.
     """
-    global paciente, data_amostra, ID, resultado, dt
+    global paciente, data_form, ID, resultado, dt
 
     if not pdf_name.endswith(".pdf"): pdf_name += ".pdf"
 
     paciente = kobo_data["identificacao/nm"]
-    data_amostra = kobo_data["_submission_time"].replace("T", " ")
-    ID = kobo_data["_id"]
+    data_form = kobo_data["identificacao/data"]
+    ID = "20COV" + kobo_data["identificacao/reg"]
     resultado = kobo_data["identificacao/result"].title()
     dt = str(datetime.datetime.now()).split(".")[0]
 
     patient = f"Nome do Paciente: {paciente}\n"
     now = f"Data: {dt}\n"
-    sample_date = f"Data de recebimento da amostra: {data_amostra}\n"
+    sample_date = f"Data de recebimento da amostra: {data_form}\n"
     Id = f"Identificação do paciente: {ID}\n"
     material = "Material Coletado: swab/sangue\n"
 

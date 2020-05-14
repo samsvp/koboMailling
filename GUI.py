@@ -134,10 +134,10 @@ As alterações feitas não serão salvas caso se feche a janela do editor de PD
 
 As seguintes variáveis podem ser inseridas no pdf escrevendo-as entre chaves ({ }):
 
-paciente = "{paciente}"
-data de coleta da amostra = "{data_amostra}"
-ID do paciente = "{ID}"
-resultado = "{resultado}"
+Paciente = "{paciente}"
+Data de preenchimento do formulário = "{data_form}"
+Número de registro do paciente = "{ID}"
+Resultado = "{resultado}"
 Horário atual = "{dt}"
 
 O sumário com os dados do paciente no topo do documento não pode ser alterado.
