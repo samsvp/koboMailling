@@ -24,13 +24,13 @@ def _send(idx, pdf_template_data):
     if GUI.using_kobo:
         _data = kobo_data[idx]
         to_email = _data["identificacao/eml"]
-        sample_date = _data["identificacao/data"]
+        sample_date = _data["identificacao/data"].split(" ")[0]
         result = _data["identificacao/result"]
         name = _data["identificacao/nm"]
     else:
         _data = sheet_data[idx]
         to_email = _data["E-mail:"]
-        sample_date = _data["Data de preenchimento:"]
+        sample_date = _data["Data de preenchimento:"].split(" ")[0]
         result = _data["Resultado do teste (laboratório de virologia da UFRJ):"]
         name = _data["Nome:"]
 

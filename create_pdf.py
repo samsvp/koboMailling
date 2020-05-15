@@ -66,9 +66,17 @@ def create_report(data, template_data, pdf_name="result.pdf", use_kobo=True):
     title = f(template_data["Título"])
     foot = f(template_data["Assinatura"])
     methodology = f(template_data["Metodologia"])
-    result = f(template_data["Resultado"])
-    conclusion = f(template_data["Conclusão"])
     observations = f(template_data["Observações"])
+    
+    if resultado == "Positivo":
+        result = f(template_data["Resultado Positivo"])
+        conclusion = f(template_data["Conclusão Positivo"])
+    elif resultado == "Negativo":
+        result = f(template_data["Resultado Negativo"])
+        conclusion = f(template_data["Conclusão Negativo"])
+    else:
+        result = f(template_data["Resultado Inconclusivo"])
+        conclusion = f(template_data["Conclusão Inconclusivo"])
 
     class PDF(FPDF):
 

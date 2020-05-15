@@ -158,8 +158,8 @@ O sumário com os dados do paciente no topo do documento não pode ser alterado.
     window.mainloop()
 
 
-def _edit_pdf(window, data):
-    
+def _edit_pdf(window, data, resultado="Positivo"):
+
     def save():
         """
         Saves the user changes.
@@ -171,8 +171,8 @@ def _edit_pdf(window, data):
         data["Título"] = txt_title.get("1.0",'end-1c')
         data["Assinatura"] = txt_ass.get("1.0",'end-1c')
         data["Metodologia"] = txt_methodology.get("1.0",'end-1c')
-        data["Resultado"] = txt_result.get("1.0",'end-1c')
-        data["Conclusão"] = txt_conclusion.get("1.0",'end-1c')
+        data[f"Resultado {resultado}"] = txt_result.get("1.0",'end-1c')
+        data[f"Conclusão {resultado}"] = txt_conclusion.get("1.0",'end-1c')
         data["Observações"] = txt_obs.get("1.0",'end-1c')
 
         with open(get_file("pdf_user_template.json"), "w", encoding='utf8') as fl:
@@ -192,13 +192,13 @@ def _edit_pdf(window, data):
         _data["Título"] = txt_title.get("1.0",'end-1c')
         _data["Assinatura"] = txt_ass.get("1.0",'end-1c')
         _data["Metodologia"] = txt_methodology.get("1.0",'end-1c')
-        _data["Resultado"] = txt_result.get("1.0",'end-1c')
-        _data["Conclusão"] = txt_conclusion.get("1.0",'end-1c')
+        _data[f"Resultado {resultado}"] = txt_result.get("1.0",'end-1c')
+        _data[f"Conclusão {resultado}"] = txt_conclusion.get("1.0",'end-1c')
         _data["Observações"] = txt_obs.get("1.0",'end-1c')
         print(_data)
 
-        _kobo_data = {"identificacao/nm": "{nome}", "_submission_time": "{_submission_time}", 
-                      "identificacao/result": "{resultado}", "_id": "{id}"}
+        _kobo_data = {"identificacao/nm": "{nome}", "identificacao/data": "{identificacao/data}", 
+                      "identificacao/result": f"{resultado}", "identificacao/reg": "{id}"}
         
         show_info_box("Por favor, aguarde enquanto abrimos o seu PDF")
 
@@ -222,9 +222,27 @@ def _edit_pdf(window, data):
         
         _edit_pdf(window, data)
 
+    def change(window, data, _resultado="Positivo"):
+        window.destroy()
+        _window = tk.Tk()
+        _window.title("Edit PDF")
+        _window.geometry('800x800')
+        _edit_pdf(_window, data, _resultado)
 
-    title = tk.Label(window, text="Editor do template de PDF", font=("Arial", 15, "bold"))
-    title.place(relx=0.5, rely=0.05, anchor=tk.CENTER)
+    title_window = tk.Label(window, text=f"Editor do template de PDF: Resultado {resultado}", font=("Arial", 15, "bold"))
+    title_window.place(relx=0.5, rely=0.02, anchor=tk.CENTER)
+
+    button_pos = tk.Button(window, text="Positivo", command=lambda: change(window, data))
+    button_pos.place(relx=0.3, rely=0.06, anchor=tk.W)
+    if resultado == "Positivo": button_pos.configure(state = "disabled")
+
+    button_neg = tk.Button(window, text="Negativo", command=lambda: change(window, data, "Negativo"))
+    button_neg.place(relx=0.5, rely=0.06, anchor=tk.CENTER)
+    if resultado == "Negativo": button_neg.configure(state = "disabled")
+
+    button_inc = tk.Button(window, text="Inconclusivo", command=lambda: change(window, data, "Inconclusivo"))
+    button_inc.place(relx=0.7, rely=0.06, anchor=tk.E)
+    if resultado == "Inconclusivo": button_inc.configure(state = "disabled")
 
     title = tk.Label(window, text="Título")
     title.place(relx=0.35, rely=0.1, anchor=tk.W)
@@ -271,19 +289,19 @@ def _edit_pdf(window, data):
     txt_methodology.place(relx=0.5, rely=0.4, anchor=tk.CENTER)
     txt_methodology.insert(tk.INSERT, data["Metodologia"])
 
-    result = tk.Label(window, text="Resultado")
+    result = tk.Label(window, text=f"Resultado {resultado}")
     result.place(relx=0.5, rely=0.47, anchor=tk.CENTER)
 
     txt_result = tk.Text(window, height=1, width=80)
     txt_result.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
-    txt_result.insert(tk.INSERT, data["Resultado"])
+    txt_result.insert(tk.INSERT, data[f"Resultado {resultado}"])
 
-    conclusion = tk.Label(window, text="Conclusão")
+    conclusion = tk.Label(window, text=f"Conclusão {resultado}")
     conclusion.place(relx=0.5, rely=0.55, anchor=tk.CENTER)
 
     txt_conclusion = tk.Text(window, height=3, width=80)
     txt_conclusion.place(relx=0.5, rely=0.6, anchor=tk.CENTER)
-    txt_conclusion.insert(tk.INSERT, data["Conclusão"])
+    txt_conclusion.insert(tk.INSERT, data[f"Conclusão {resultado}"])
 
     obs = tk.Label(window, text="Observações")
     obs.place(relx=0.5, rely=0.63, anchor=tk.CENTER)

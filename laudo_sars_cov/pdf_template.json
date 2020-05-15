@@ -6,7 +6,11 @@
     "Título": "Laudo Técnico de Diagnóstico Molecular para o Vírus SARS-CoV2 (COVID-19)",
     "Assinatura": "Avenida Carlos Chagas Filho, 375, CCS, Bloco A, sala 121, Cidade Universitária,\nIlha do Fundão, Rio de Janeiro/RJ - CEP 21941-902\n Telefone: 55+21+3938-6384",
     "Metodologia": "Exame de diagnóstico molecular pelo Método de detecção de RT-PCR em tempo real, com sondas de detecção para SARS-CoV2 (COVID-19)",
-    "Resultado": "{resultado}",
-    "Conclusão": "A amostra coletada de SW, do paciente na presente data, mostrou-se, {resultado} para o ácidonucléico do SARS-CoV2.",
+    "Resultado Positivo": "{resultado}",
+    "Resultado Negativo": "{resultado}",
+    "Resultado Inconclusivo": "{resultado}",
+    "Conclusão Positivo": "A amostra coletada de SW, do paciente na presente data, mostrou-se, {resultado} para o ácidonucléico do SARS-CoV2.",
+    "Conclusão Negativo": "A amostra coletada de SW, do paciente na presente data, mostrou-se, {resultado} para o ácidonucléico do SARS-CoV2.",
+    "Conclusão Inconclusivo": "A amostra coletada de SW, do paciente na presente data, mostrou-se, {resultado} para o ácidonucléico do SARS-CoV2.",
     "Observações": "(1) No caso do SARS-CoV2 NÃO estar detectável na amostra, deve-se levar em consideração o tipo de material coletado e o tempo transcorrido entre o período de sintomas observados, e a data da coleta da amostra para realização do exame.\n (2) Amostra com detecção indeterminada para o ácido nucléico do SARS-CoV2 sugerimos a realização de nova coleta/exame."
 }
