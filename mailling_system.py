@@ -63,9 +63,9 @@ def check_login(address, password):
         result = False
 
     return result
-    
 
-def send_email_report(address, password, to_email, body, pdf_data, pdf_name):
+
+def send_email_report(address, password, to_email, body, pdf_data, pdf_name, smtp):
     """
     Sends the email to the patient and doctors informing the test results
     """
@@ -88,7 +88,5 @@ def send_email_report(address, password, to_email, body, pdf_data, pdf_name):
 
     msg.add_attachment(pdf_data,  maintype='application/pdf', subtype='pdf', filename=pdf_name)
 
-    with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
-        smtp.login(address, password)
-        smtp.send_message(msg)
+    smtp.send_message(msg)
 

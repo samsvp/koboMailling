@@ -1,6 +1,7 @@
 import os
 import sys
 import json
+import smtplib
 from threading import Thread
 import GUI
 from utils import get_file
@@ -17,20 +18,20 @@ kobo_data = []
 sheet_data = []
 
 
-def _send(idx, pdf_template_data):
+def _send(idx, pdf_template_data, smtp):
     """
     Sends an email to the patient containing the test result and a report.
     """
     if GUI.using_kobo:
         _data = kobo_data[idx]
         to_email = _data["identificacao/eml"]
-        sample_date = _data["identificacao/data"].split(" ")[0]
+        sample_date = str(_data["identificacao/data"]).split(" ")[0]
         result = _data["identificacao/result"]
         name = _data["identificacao/nm"]
     else:
         _data = sheet_data[idx]
         to_email = _data["E-mail:"]
-        sample_date = _data["Data de preenchimento:"].split(" ")[0]
+        sample_date = str(_data["Data de preenchimento:"]).split(" ")[0]
         result = _data["Resultado do teste (laboratório de virologia da UFRJ):"]
         name = _data["Nome:"]
 
@@ -39,7 +40,7 @@ def _send(idx, pdf_template_data):
 
     pdf_data, pdf_name = get_report(create_report(_data, pdf_template_data, use_kobo=GUI.using_kobo))
 
-    send_email_report(address, password, to_email, body, pdf_data, pdf_name)
+    send_email_report(address, password, to_email, body, pdf_data, pdf_name, smtp)
 
 
 def send(indexes):
@@ -55,17 +56,21 @@ def send(indexes):
 
     errors = []
     n_enviados = 0
-    for idx in indexes:
-        try:
-            # Due to excel spreadsheets number, every patient number has an offset of 2
-            _send(idx - 2, pdf_template_data)
-            n_enviados += 1
-        except KeyError as e: 
-            errors.append((idx, f"dados vazios ({e})"))
-        except IndexError as e:
-            errors.append((idx, "nº de paciente inexistente"))
-        except Exception as e:
-            errors.append((idx, e))
+
+    with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
+        smtp.login(address, password)
+
+        for idx in indexes:
+            try:
+                # Due to excel spreadsheets number, every patient number has an offset of 2
+                _send(idx - 2, pdf_template_data, smtp)
+                n_enviados += 1
+            except KeyError as e: 
+                errors.append((idx, f"dados vazios ({e})"))
+            except IndexError as e:
+                errors.append((idx, "nº de paciente inexistente"))
+            except Exception as e:
+                errors.append((idx, e))
 
     error_msg = "Os dados dos seguintes pacientes apresentaram erro:\n"
     for error in errors: error_msg += f"{error[0]}:  {error[1]}\n"
