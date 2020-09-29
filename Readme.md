@@ -1,4 +1,4 @@
-# Kobo Mailing
+# Mass Mailing
 
 Repository to send emails based on the csv data files created from Kobo during the COVID-19 pandemic. It also accepts custum made .csv and .xlsx if they have the needed fields contained in the main.py file.
 
