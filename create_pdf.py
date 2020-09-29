@@ -29,7 +29,7 @@ def get_report(name):
     return file_data, file_name
 
 
-def create_report(data, template_data, pdf_name="result.pdf", use_kobo=True):
+def create_report(data, template_data, pdf_name="result.pdf"):
     """
     Creates a report based on the patient data.
     Returns the name of the create pdf.
@@ -37,25 +37,20 @@ def create_report(data, template_data, pdf_name="result.pdf", use_kobo=True):
     global paciente, data_form, ID, resultado, dt
 
     if not pdf_name.endswith(".pdf"): pdf_name += ".pdf"
-
-    if use_kobo:
-        paciente = data["identificacao/nm"]
-        data_form = data["identificacao/data"]
-        ID = "20COV" + str(data["identificacao/reg"])
-        resultado = data["identificacao/result"].title()
-    else:
-        paciente = data["Nome:"]
-        data_form = data["Data de preenchimento:"]
-        ID = "20COV" + str(data["Número de registro:"])
-        resultado = data["Resultado do teste (laboratório de virologia da UFRJ):"].title()
+    print(data)
+    paciente = data["Nome:"]
+    data_form = data.get("Data do exame:", "")
+    ID = str(data["Número de registro:"])
+    resultado = data["Resultado:"].title()
+    index = data["Indice:"]
 
     dt = str(datetime.datetime.now()).split(".")[0].split(" ")[0]
 
-    patient = f"Nome do Paciente: {paciente}\n"
-    now = f"Data: {dt}\n"
-    sample_date = f"Data de recebimento da amostra: {data_form}\n"
-    Id = f"Identificação do paciente: {ID}\n"
-    material = "Material Coletado: swab/sangue\n"
+    patient = f"NOME DO PACIENTE: {paciente}\n"
+    now = f"DATA DE LIBERAÇÃO: {dt}\t"
+    sample_date = f"DATA DA COLETA: {data_form}\t"
+    Id = f"IDENTIFICAÇÃO: 20COV{ID}\n\n"
+    material = "MATERIAL COLETADO: Sangue"
 
     data_text = patient + now + sample_date + Id + material
 
@@ -83,7 +78,7 @@ def create_report(data, template_data, pdf_name="result.pdf", use_kobo=True):
         def header(self):
             self.image(get_file("Header.png"), 10, 8, 200)
             self.set_font(title_font, 'B', int(tf_size))
-            self.cell(30, 60, title, align='L')
+            self.cell(0, 60, title, align='C')
 
 
         def footer(self):
@@ -106,10 +101,10 @@ def create_report(data, template_data, pdf_name="result.pdf", use_kobo=True):
 
 
     pdf.body(10, 60, "", data_text)
-    pdf.body(50, 100, "Metodologia:", methodology)
-    pdf.body(50, 120, "Resultado:", result)
-    pdf.body(50, 140, "Conclusão:", conclusion)
-    pdf.body(50, 160, "Observações:", observations)
+    pdf.body(50, 100, "METODOLOGIA:", methodology)
+    pdf.body(50, 115, "ÍNDICE:", result)
+    pdf.body(50, 125, "CONCLUSÃO:", conclusion)
+    pdf.body(50, 140, "OBSERVAÇÕES:", observations)
 
     pdf.image(get_file("Footer.png"), 75)
 

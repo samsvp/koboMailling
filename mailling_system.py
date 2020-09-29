@@ -1,7 +1,6 @@
 import os
 import json
 import smtplib
-import requests
 from email.message import EmailMessage
 from utils import get_file
 from create_pdf import create_report

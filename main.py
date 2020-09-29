@@ -5,7 +5,7 @@ import smtplib
 from threading import Thread
 import GUI
 from utils import get_file
-from get_data import get_kobo_data, get_sheet_data
+from get_data import get_sheet_data
 from create_pdf import create_report, get_report
 from mailling_system import create_body, send_email_report, check_login
 
@@ -14,7 +14,6 @@ data_retrieved = False
 password = ""
 address = ""
 sheet_data_path = ""
-kobo_data = []
 sheet_data = []
 
 
@@ -22,23 +21,18 @@ def _send(idx, pdf_template_data, smtp):
     """
     Sends an email to the patient containing the test result and a report.
     """
-    if GUI.using_kobo:
-        _data = kobo_data[idx]
-        to_email = _data["identificacao/eml"]
-        sample_date = str(_data["identificacao/data"]).split(" ")[0]
-        result = _data["identificacao/result"]
-        name = _data["identificacao/nm"]
-    else:
-        _data = sheet_data[idx]
-        to_email = _data["E-mail:"]
-        sample_date = str(_data["Data de preenchimento:"]).split(" ")[0]
-        result = _data["Resultado do teste (laboratório de virologia da UFRJ):"]
-        name = _data["Nome:"]
 
+    _data = sheet_data[idx]
+    to_email = _data["E-mail:"]
+    sample_date = str(_data.get("Data do exame:", "")).split(" ")[0]
+    result = _data["Resultado:"]
+    name = _data["Nome:"]
+    index = _data["Indice:"]
+    reg_num = _data["Número de registro:"]
 
     body = create_body(name, result, sample_date)
 
-    pdf_data, pdf_name = get_report(create_report(_data, pdf_template_data, use_kobo=GUI.using_kobo))
+    pdf_data, pdf_name = get_report(create_report(_data, pdf_template_data))
 
     send_email_report(address, password, to_email, body, pdf_data, pdf_name, smtp)
 
@@ -109,63 +103,19 @@ def parse_data(window, txt_entry, txt_label):
     GUI.show_info_box(f"Mandando {len(indexes)} emails")
 
     send(indexes)
-    
 
-def get_data():
-    global kobo_data, data_retrieved
-    
-    kobo_data = get_kobo_data()
-    data_retrieved = True
-    GUI.data_retrieved = True
-    GUI.using_kobo = True
-
-
-def switch_data():
-    """
-    Switch between kobo data and a user csv/xslx.
-    """
-    global sheet_data, sheet_data_path
-
-    if (not data_retrieved) and (GUI.using_kobo): 
-        Thread(target=GUI.wait_data).start()
-        get_data()
-    elif not sheet_data:
-        file_name = GUI.get_file_name()
-        sheet_data = get_sheet_data(file_name)
-    elif (not GUI.using_kobo) and sheet_data:
-        q = f"Você já carregou a seguinte planilha: {sheet_data_path}. Carregar outra em seu lugar?"
-        if GUI.question_box(q): 
-            sheet_data_path = GUI.get_file_name()
-            sheet_data = get_sheet_data(sheet_data_path)
-
-    if GUI.using_kobo: GUI.show_info_box("Dados do Kobo carregados com sucesso.")
-    else: GUI.show_info_box(f"Dados de {sheet_data_path} carregados com sucesso.")
-    
 
 def main():
-    global data_retrieved, kobo_data, sheet_data, sheet_data_path, address, password
+    global data_retrieved, sheet_data, sheet_data_path, address, password
+    
+    sheet_data_path = GUI.get_file_name()
+    sheet_data = get_sheet_data(sheet_data_path)
 
-    GUI.choose_data()
+    # credentials = []
+    # GUI.get_credentials(credentials)
+    # address, password = credentials
 
-    if GUI.load_kobo_data is None: sys.exit(0)
-    if GUI.load_kobo_data: Thread(target=get_data).start()
-    else:
-        sheet_data_path = GUI.get_file_name()
-        sheet_data = get_sheet_data(sheet_data_path)
-        GUI.using_kobo = False
-
-    credentials = []
-    GUI.get_credentials(credentials)
-    address, password = credentials
-
-    if GUI.load_kobo_data:
-        if not kobo_data:
-            msg = "Não foi possível se conectar com o Kobo. \
-    Por favor, verifique sua conecção com a internet e tente novamente"
-            GUI.show_error_box(msg)
-            sys.exit(0) 
-
-    GUI.main_window(parse_data, switch_data)
+    GUI.main_window(parse_data)
 
 
 main()

@@ -10,7 +10,7 @@ build_exe_options = {"packages": ["os", "tkinter", "json", "requests", "smtplib"
 
 base = "Win32GUI"
 
-setup(  name = "koboMail",
+setup(  name = "soroMail",
         version = "1.0",
         description = "Application to send emails based on kobo data.",
         options = {"build_exe": build_exe_options},

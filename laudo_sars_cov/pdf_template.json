@@ -1,16 +1,16 @@
 {
     "Fonte_Título": "Arial",
-    "Fonte_Título_tamanho": 15,
+    "Fonte_Título_tamanho": 12,
     "Fonte": "Times",
     "Fonte_tamanho": 8,
-    "Título": "Laudo Técnico de Diagnóstico Molecular para o Vírus SARS-CoV2 (COVID-19)",
+    "Título": "Laudo Técnico de Diagnóstico Sorológico para o Vírus SARS-CoV-2 (COVID-19)",
     "Assinatura": "Avenida Carlos Chagas Filho, 375, CCS, Bloco A, sala 121, Cidade Universitária,\nIlha do Fundão, Rio de Janeiro/RJ - CEP 21941-902\n Telefone: 55+21+3938-6384",
-    "Metodologia": "Exame de diagnóstico molecular pelo Método de detecção de RT-PCR em tempo real, com sondas de detecção para SARS-CoV2 (COVID-19)",
+    "Metodologia": "Detecção pelo método de ELISA de anticorpos IgG contra proteína S do vírus SARS-CoV-2 (COVID-19).",
     "Resultado Positivo": "{resultado}",
     "Resultado Negativo": "{resultado}",
     "Resultado Inconclusivo": "{resultado}",
     "Conclusão Positivo": "A amostra coletada de SW, do paciente na presente data, mostrou-se, {resultado} para o ácidonucléico do SARS-CoV2.",
     "Conclusão Negativo": "A amostra coletada de SW, do paciente na presente data, mostrou-se, {resultado} para o ácidonucléico do SARS-CoV2.",
     "Conclusão Inconclusivo": "A amostra coletada de SW, do paciente na presente data, mostrou-se, {resultado} para o ácidonucléico do SARS-CoV2.",
-    "Observações": "(1) No caso do SARS-CoV2 NÃO estar detectável na amostra, deve-se levar em consideração o tipo de material coletado e o tempo transcorrido entre o período de sintomas observados, e a data da coleta da amostra para realização do exame.\n (2) Amostra com detecção indeterminada para o ácido nucléico do SARS-CoV2 sugerimos a realização de nova coleta/exame."
+    "Observações": "1. Os testes de detecção de anticorpos não devem ser utilizados na investigação de casos agudos de COVID-19. É comum que os anticorpos não sejam detectados nos primeiros dias após o início dos sintomas. \n2. Um resultado não reagente por método sorológico não descarta a possibilidade de COVID-19, principalmente nas fases iniciais de doença. Um resultado reagente por método sorológico não garante que o indivíduo tenha eliminado o vírus e que não haja risco de transmissão. Portanto os testes sorológicos não devem ser utilizados como critério para interrupção de isolamento e retorno ao trabalho. \n3. Em caso de amostra não reagente ou indeterminada para o anticorpo da classe IgG contra proteína S do vírus SARS-CoV2, deve-se levar em consideração o tempo transcorrido entre o início dos sintomas e a data da coleta da amostra para realização do exame. Se inferior a 12 dias, é recomendável a realização de nova coleta/exame. \n4. Ainda não foi estabelecido de forma definitiva se indivíduos que desenvolvem anticorpos contra SARS-CoV2 estão totalmente protegidos contra infecções futuras pelo SARS-CoV2 e quanto tempo esta imunidade pode durar."
 }
